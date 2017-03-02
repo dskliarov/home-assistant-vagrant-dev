@@ -1,0 +1,8 @@
+.vagrant
+roles/home-assistant-ansible
+roles/home-assistant-ansible/*
+roles/ansible-role-git
+roles/ansible-role-git/*
+roles/ansible-role-nodejs
+reoles/ansible-role-nodejs/*
+*.retry

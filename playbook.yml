@@ -1,0 +1,66 @@
+---
+- name: Install Home Assistant
+  hosts: all
+  become: yes
+  become_user: root
+
+  pre_tasks:
+    - yum: name={{ item }} state=present
+      with_items:
+       - epel-release
+       - python34-setuptools
+       - python34-devel.x86_64
+
+    - name: install pip
+      command: easy_install-3.4 pip
+
+    - name: Add dnf yum repo
+      yum_repository:
+        name: dnf_repo
+        description: Dnf YUM repo
+        file: dnf-stack-el7
+        baseurl: https://copr-be.cloud.fedoraproject.org/results/@rpm-software-management/dnf-stack-el7/epel-7-\$basearch/
+        gpgcheck: yes
+        skip_if_unavailable: True
+        gpgkey: https://copr-be.cloud.fedoraproject.org/results/@rpm-software-management/dnf-stack-el7/pubkey.gpg
+        enabled: yes
+
+    - name: Add yarn yum repo
+      yum_repository:
+        name: yarn
+        description: Dnf YUM repo
+        file: yarn
+        baseurl: https://dl.yarnpkg.com/rpm/
+        skip_if_unavailable: True
+        gpgcheck: yes
+        gpgkey: https://dl.yarnpkg.com/rpm/pubkey.gpg
+        enabled: yes
+
+    - name: install packages
+      yum: name={{ item }} state=present
+      with_items:
+       - dnf
+       - openssl-devel
+       - gcc-c++
+       - yarn
+
+    - systemd:
+        name: firewalld
+        state: started
+        enabled: True
+
+  roles:
+      - home-assistant-ansible
+      - ansible-role-nodejs
+      - ansible-role-git
+ 
+  tasks:
+    - name: Clone git repo locally
+      local_action:
+        module: git
+        repo: https://github.com/home-assistant/home-assistant.git
+        dest: ./src
+        track_submodules: yes
+
+    - name: run bootstrap script
+      command: /home-assistant/script/bootstrap

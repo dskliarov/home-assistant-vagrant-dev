@@ -1,0 +1,7 @@
+---
+- src: https://github.com/dskliarov/home-assistant-ansible.git
+  scm: git
+- src: https://github.com/geerlingguy/ansible-role-nodejs.git
+  scm: git
+- src: https://github.com/geerlingguy/ansible-role-git.git
+  scm: git
